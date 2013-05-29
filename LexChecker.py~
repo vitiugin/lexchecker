@@ -106,3 +106,4 @@ Text = TextFile.read()
 #Text = csv.reader(open('Data/file.csv', 'rb'), delimiter='', quotechar = '')
 
 SentenceCutter(Text)
+
