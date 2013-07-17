@@ -7,6 +7,8 @@ import re
 
 Morph = pymorphy2.MorphAnalyzer()
 FinalSentence = []
+ListLen = []
+VisibleText = []
 
 """
 ----- Creating list of lexical minimum -----
@@ -43,7 +45,9 @@ List of sentences -> List of words
 
 
 def WordCutter(Sentence):
-    ListofWords = re.split(r'[\s+\t\n\.\|\:\/\,\?\!\"()]+', Sentence)
+    ListofWords = nltk.WordPunctTokenizer().tokenize(Sentence)
+    a = len(ListofWords)
+    ListLen.append(a)
     for w in ListofWords:
         Lemmatization(w)
 
@@ -78,17 +82,26 @@ If no, then count += 1
 
 
 def SentenceChecker(Sentence):
+    OneSent = []
     count = 0
     for OneWord in Sentence:
         if OneWord[2] in LexicalMinimum:
-            continue
-        else:
+            if OneWord[0] == "," or OneWord[0] == "." or OneWord[0] == ":" or OneWord[0] == ";" or OneWord[0] == "!" or OneWord[0] == "?" or OneWord[0] == "-":
+                OneSent.append(OneWord[0])
+            else:
+                OneSent.append(' ' + '<span class="correctWord">' + OneWord[0] + '</span>')        
+        else:            
+            OneSent.append(' ' + '<span class="wrongWord">' + OneWord[0] + '</span>')
             count += 1
-
-    if count > 1:
-        print u"Complicate sentence"
+    
+    x = ListLen[-1]*0.33
+    if count > x:
+        OneSent.insert(0, '<span class="Complex sentence">')
     else:
-        print u"Simple sentence"
+        OneSent.insert(0, '<span class="Simple sentence">')
+    OneSent.append('</span>')
+    
+    VisibleText.append(OneSent)
 
 """
 ----- Data -----
@@ -106,3 +119,8 @@ Text = TextFile.read()
 #Text = csv.reader(open('Data/file.csv', 'rb'), delimiter='', quotechar = '')
 
 SentenceCutter(Text)
+
+for element in VisibleText:
+    for e in element:
+        print e
+
