@@ -1,0 +1,42 @@
+body{
+    background: #d0d0d0;
+    margin-top: 50px;
+    margin-left: 60px;
+    margin-right: 50px;
+    margin-bottom: 50px;
+    }
+table
+    {
+    border:0
+    height:400px
+    }
+.correctWord {
+    color: green;
+    }
+    
+.wrongWord {
+    color: red;
+    }
+div.divsprocr{
+    background: #f0f0f0;
+    height: 250px;
+    width:370px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    }
+
+
+div.divsprocr1{
+    background: #f0f0f0;
+    position:absolute;
+    left:610px;
+    right:160px;
+    top:80px;
+    bottom:150px;
+    overflow-x:hidden;
+    overflow-y:scroll;
+    border:1px solid black;/*Чтобы были видны границы блока*/
+    }
+td.result
+    {
+    }
