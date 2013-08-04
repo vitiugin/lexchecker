@@ -20,6 +20,7 @@ class LexChecker(object):
         self.VisibleText = []
         self.LexicalMinimum = urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_basic.txt').read().decode('utf-8')
         self.LexicalMinimum = self.LexicalMinimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_elementary.txt').read().decode('utf-8')
+        self.LexicalMinimum = self.LexicalMinimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_first.txt').read().decode('utf-8')
 
     """
     ----- Creating list of lexical minimum -----
