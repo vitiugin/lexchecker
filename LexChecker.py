@@ -1,6 +1,10 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
 
+import sys
+LIB64_DIR = '/home/k/karpnv/lib64/python2.7/site-packages'
+sys.path.insert(0, LIB64_DIR)
+
 import pymorphy2
 import nltk
 import urllib
@@ -14,9 +18,8 @@ class LexChecker(object):
         self.FinalSentence = []
         self.ListLen = []
         self.VisibleText = []
-        self.LexicalMinimum = urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin.txt').read().decode('utf-8')
-
-        #print 'init'
+        self.LexicalMinimum = urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_basic.txt').read().decode('utf-8')
+        self.LexicalMinimum = self.LexicalMinimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_elementary.txt').read().decode('utf-8')
 
     """
     ----- Creating list of lexical minimum -----
@@ -107,4 +110,3 @@ class LexChecker(object):
         OneSent.append('</span>')
     
         self.VisibleText.append(OneSent)
-
