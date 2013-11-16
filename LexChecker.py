@@ -14,29 +14,29 @@ class LexChecker(object):
 
 
     def __init__(self):
-        self.Morph = pymorphy2.MorphAnalyzer()
-        self.FinalSentence = []
-        self.ListLen = []
-        self.VisibleText = []
-        self.LexicalMinimum = urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_basic.txt').read().decode('utf-8')
-        self.LexicalMinimum = self.LexicalMinimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_elementary.txt').read().decode('utf-8')
-        self.LexicalMinimum = self.LexicalMinimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_first.txt').read().decode('utf-8')
+        self.morph = pymorphy2.MorphAnalyzer()
+        self.final_sentence = []
+        self.len_list = []
+        self.visible_text = []
+        self.lexical_minimum = urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_basic.txt').read().decode('utf-8')
+        self.lexical_minimum = self.lexical_minimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_elementary.txt').read().decode('utf-8')
+        self.lexical_minimum = self.lexical_minimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_first.txt').read().decode('utf-8')
 
     """
     ----- Creating list of lexical minimum -----
     """
 
-    def LexicalMinimumList(self,LexicalMinimumListFileName):
-        lexicalMinimum = []
+    def open_lex_min_list(self,lex_min_list_file_name):
+        lexical_minimum = []
     
-        fp = open(LexicalMinimumListFileName, 'r')
+        fp = open(lex_min_list_file_name, 'r')
         line = fp.readline().encode('utf-8')
         while line:
             word = line.strip()
-            lexicalMinimum.append(word)
+            lexical_minimum.append(word)
             line = fp.readline().encode('utf-8')
         fp.close()
-        return lexicalMinimum
+        return lexical_minimum
 
     """
     ----- Sentences tokenization -----
@@ -44,26 +44,26 @@ class LexChecker(object):
     """
 
 
-    def SentenceCutter(self, FullText):
-        ListofSentences = nltk.PunktSentenceTokenizer().tokenize(FullText)
-        for s in ListofSentences:
-            self.WordCutter(s)
+    def cut_sentence(self, full_text):
+        list_of_sentences = nltk.PunktSentenceTokenizer().tokenize(full_text)
+        for s in list_of_sentences:
+            self.cut_words(s)
 
     """
     ----- Words tokenization -----
     List of sentences -> List of words
     """
 
-    def WordCutter(self,Sentence):
-        ListofWords = nltk.WordPunctTokenizer().tokenize(Sentence)
-        a = len(ListofWords)
-        self.ListLen.append(a)
-        for w in ListofWords:
-            self.Lemmatization(w)
+    def cut_words(self,sentence):
+        list_of_words = nltk.WordPunctTokenizer().tokenize(sentence)
+        a = len(list_of_words)
+        self.len_list.append(a)
+        for w in list_of_words:
+            self.lemmatise(w)
 
-        self.SentenceChecker(self.FinalSentence)
+        self.check_sentence(self.final_sentence)
 
-        del self.FinalSentence[:]
+        del self.final_sentence[:]
         return
 
     """
@@ -71,15 +71,15 @@ class LexChecker(object):
     Word from list of words -> ["word", "POS", "lemma"]
     """
 
-    def Lemmatization(self,Word):
-        WordObject = []
-        WordObject.append(Word)
-        Word = Word.lower()
+    def lemmatise(self,word):
+        word_object = []
+        word_object.append(word)
+        word = word.lower()
         try:
-            WordinWork = self.Morph.parse(Word)[0]
-            WordObject.append(WordinWork.tag.POS)
-            WordObject.append(WordinWork.normal_form)
-            self.FinalSentence.append(WordObject)
+            word_in_work = self.morph.parse(word)[0]
+            word_object.append(word_in_work.tag.POS)
+            word_object.append(word_in_work.normal_form)
+            self.final_sentence.append(word_object)
         except IndexError:
             return
 
@@ -90,24 +90,24 @@ class LexChecker(object):
     """
 
 
-    def SentenceChecker(self,Sentence):
-        OneSent = []
+    def check_sentence(self,sentence):
+        one_sent = []
         count = 0
-        for OneWord in Sentence:
-            if OneWord[2] in self.LexicalMinimum:
-                if OneWord[0] == "," or OneWord[0] == "." or OneWord[0] == ":" or OneWord[0] == ";" or OneWord[0] == "!" or OneWord[0] == "?" or OneWord[0] == "-":
-                    OneSent.append(OneWord[0])
+        for one_word in sentence:
+            if one_word[2] in self.lexical_minimum:
+                if one_word[0] == "," or one_word[0] == "." or one_word[0] == ":" or one_word[0] == ";" or one_word[0] == "!" or one_word[0] == "?" or one_word[0] == "-":
+                    one_sent.append(one_word[0])
                 else:
-                    OneSent.append(' ' + '<span class="correctWord">' + OneWord[0] + '</span>')        
+                    one_sent.append(' ' + '<span class="correctWord">' + one_word[0] + '</span>')
             else:            
-                OneSent.append(' ' + '<span class="wrongWord">' + OneWord[0] + '</span>')
+                one_sent.append(' ' + '<span class="wrongWord">' + one_word[0] + '</span>')
                 count += 1
     
-        x = self.ListLen[-1]*0.33
+        x = self.len_list[-1]*0.33
         if count > x:
-            OneSent.insert(0, '<span class="Complex sentence">')
+            one_sent.insert(0, '<span class="Complex sentence">')
         else:
-            OneSent.insert(0, '<span class="Simple sentence">')
-        OneSent.append('</span>')
+            one_sent.insert(0, '<span class="Simple sentence">')
+        one_sent.append('</span>')
     
-        self.VisibleText.append(OneSent)
+        self.visible_text.append(one_sent)

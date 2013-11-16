@@ -57,8 +57,8 @@ def process(text):
     ##For loading data from file please uncomment and edit following strings
     ##import csv
     ##text = csv.reader(open('Data/file.csv', 'rb'), delimiter='', quotechar = '')
-    lexchecker.SentenceCutter(text)
-    for element in lexchecker.VisibleText:
+    lexchecker.cut_sentence(text)
+    for element in lexchecker.visible_text:
         for e in element:
             print e.encode('utf-8')
     return 
