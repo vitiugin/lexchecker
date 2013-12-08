@@ -2,11 +2,11 @@
 #-*- coding: utf-8 -*-
 
 import sys
-import os, cgi
 import urllib
 from urllib import urlopen
 from lexchecker import LexChecker
-
+import os, cgi
+#from vvodchecker import VvodChecker
 
 LIB64_DIR = '/home/k/karpnv/lib64/python2.7/site-packages'
 sys.path.insert(0, LIB64_DIR)
@@ -32,7 +32,7 @@ PAGE_HEAD = u"""
 </td></tr>
 <tr> 
 <td>  <form action="textarea.py" method="post">
-    <p><textarea rows="15" cols="45" name="text" >%s</textarea></p>
+    <p><textarea rows="20" cols="55" name="text" >%s</textarea></p>
 </td> 
 <td> 
     <p><input type="submit" value="> Обработать >"></p>
@@ -44,14 +44,24 @@ PAGE_FOOT = u"""
 </div>
 
 </td> 
-</tr> </table>
+</tr>
+</table>
+  
+<table>
+<tr> 
+<td> Поиск в тексте </td>
+<td> <input type="radio" name="group1" value="a" checked> <span class="wrongWord">пассивной лексики</span> или </td> 
+<td> <input type="radio" name="group1" value="b"> <span class="wrongWord">сложных конструкций</span> </td>
+</tr> 
+
+</table>
     </form>
  </body>
 </html>"""
 
-def process(text):
-    lexchecker = LexChecker()
-    LexicalMinimum = urllib.urlopen('http://lingvocourse.ru/www/public_html/cgi-bin/simp/Data/lexmin.txt').read().decode('utf-8')
+def process(text, lexchecker):
+    out=''
+    #LexicalMinimum = urllib.urlopen('http://lingvocourse.ru/www/public_html/cgi-bin/simp/Data/lexmin.txt').read().decode('utf-8')
     #text = urllib.urlopen('http://lingvocourse.ru/www/public_html/cgi-bin/simp/Data/corpus.txt').read().decode('utf-8')
 
     ##For loading data from file please uncomment and edit following strings
@@ -60,15 +70,13 @@ def process(text):
     lexchecker.cut_sentence(text)
     for element in lexchecker.visible_text:
         for e in element:
-            print e.encode('utf-8')
-    return 
+            out=out+e.encode('utf-8')
+    return out
 
-def print_text(request):
-    request = unicode(request, 'utf-8')
-    response=request
+def print_text(request,resp):
     print CONTENT_HEADER
     print (PAGE_HEAD  % (request)).encode('utf-8')
-    process(request)
+    print resp
     print (PAGE_FOOT).encode('utf-8')    
     return
 
@@ -84,11 +92,21 @@ def main():
     #print_text('dddd')
     if f.has_key("text"):
         text=f["text"].value
-        if text!='':
-            print_text(text)
+        text = unicode(text, 'utf-8')
+        lexchecker = LexChecker()
+        if text!='' and f["group1"].value=="a":
+            resp=process(text,lexchecker)
+            print_text(text,resp)
+        elif text!='' and f["group1"].value=="b":
+            resp=lexchecker.check_vvod_words(text)
+            resp=lexchecker.findCompStruct(resp.encode('utf-8'))
+            print_text(text,resp)
+        elif text!='' and f["group1"].value=="c":
+            resp=lexchecker.findCompStruct(text.encode('utf-8'))
+            print_text(text,resp)
         else:
             print_error("No data to process")
-    else: 
+    else:
         print_error("No data to process")
       
 if __name__ == '__main__':
