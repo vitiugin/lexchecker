@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
 
-import sys
+import sys,re
 LIB64_DIR = '/home/k/karpnv/lib64/python2.7/site-packages'
 sys.path.insert(0, LIB64_DIR)
 
@@ -11,17 +11,26 @@ import urllib
 
 
 class LexChecker(object): 
-
-
-    def __init__(self):
+    wordTagStart='<span class="%s">'
+    sentenceTagStart ='<span class="%s">'
+    tagStop='</span>'
+    wordCount=0
+    sentenceCount=0
+    syllableCount=0
+    letterNumberCount=0
+    complexCount=0
+    
+    def __init__(self,level='a1'):
         self.morph = pymorphy2.MorphAnalyzer()
         self.final_sentence = []
         self.len_list = []
         self.visible_text = []
         self.lexical_minimum = urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_basic.txt').read().decode('utf-8')
-        self.lexical_minimum = self.lexical_minimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_elementary.txt').read().decode('utf-8')
-        self.lexical_minimum = self.lexical_minimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_first.txt').read().decode('utf-8')
-
+        if level=='a2':
+            self.lexical_minimum = self.lexical_minimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_elementary.txt').read().decode('utf-8')
+        if level=='b1':
+            self.lexical_minimum = self.lexical_minimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_elementary.txt').read().decode('utf-8')
+            self.lexical_minimum = self.lexical_minimum + urllib.urlopen('https://raw.github.com/fedorvityugin/lexchecker/master/Data/lexmin_first.txt').read().decode('utf-8')
     """
     ----- Creating list of lexical minimum -----
     """
@@ -111,7 +120,9 @@ class LexChecker(object):
         one_sent.append('</span>')
     
         self.visible_text.append(one_sent)
-
+        return self.visible_text
+    
+    
     def check_vvod_words(self,sentence):
         sentence=sentence
         fpg = urllib.urlopen( 'https://raw.github.com/fedorvityugin/lexchecker/master/Data/vvodn.txt').read().decode('utf-8')

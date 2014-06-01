@@ -25,13 +25,20 @@ PAGE_HEAD = u"""
 <link type="text/css" rel="stylesheet" href="stylesheet.css"/>
  </head>
  <body>
+ <p>
+ Выберите целевой уровень владения языком </br>
+ <form action="textarea.py" method="post">
+<input type="radio" name="group2" value="a1"> <span class="case">Элементарный</span>  </br>
+<input type="radio" name="group2" value="a2"> <span class="case">Базовый</span></br>
+<input type="radio" name="group2" value="b1" checked> <span class="case">Первый сертифицируемый</span>  </br>
+</p>
 <table > 
 <tr> <td><b>Введите ваш текст для обработки:</b>
 </td> <td>
 </td><td><b>Результат обработки:</b>
-</td></tr>
+</td><td></td></tr>
 <tr> 
-<td>  <form action="textarea.py" method="post">
+<td>  
     <p><textarea rows="20" cols="55" name="text" >%s</textarea></p>
 </td> 
 <td> 
@@ -43,7 +50,7 @@ PAGE_HEAD = u"""
 PAGE_FOOT = u"""
 </div>
 
-</td> 
+</td> <td></td>
 </tr>
 </table>
   
@@ -93,7 +100,7 @@ def main():
     if f.has_key("text"):
         text=f["text"].value
         text = unicode(text, 'utf-8')
-        lexchecker = LexChecker()
+        lexchecker = LexChecker(f["group2"].value)#f["group2"].value
         if text!='' and f["group1"].value=="a":
             resp=process(text,lexchecker)
             print_text(text,resp)
